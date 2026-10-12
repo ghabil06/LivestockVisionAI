@@ -320,20 +320,74 @@ def sync_offline_batch_to_db(captures: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Reconciles a batch of offline field captures from edge/Android nodes
     into the central animal registry and measurement database.
+    Validates capture integrity, decodes and persists attached image bytes,
+    and returns per-item sync acknowledgement status.
     """
+    import base64
+    import io
+    from PIL import Image
+
     now_iso = datetime.now(timezone.utc).isoformat()
     synced = []
     failed = []
 
+    storage_root = Path("data/storage/offline_sync")
+
     for item in captures:
-        queue_id = item.get("queue_id", str(uuid.uuid4()))
-        animal_id = (item.get("animal_id") or f"EDGE-{queue_id[:8]}").strip().upper()
+        queue_id = item.get("queue_id") or item.get("capture_id") or item.get("captureId") or str(uuid.uuid4())
+        capture_id = item.get("capture_id") or item.get("captureId") or queue_id
+        animal_id = (item.get("animal_id") or f"EDGE-{str(capture_id)[:8]}").strip().upper()
         species_str = item.get("species_hint") or item.get("species") or "COW"
         farm_id = item.get("farm_id", "OFFLINE_FIELD_UNKNOWN")
         weight_val = item.get("local_weight_est_kg") or item.get("scale_weight_kg")
 
         try:
-            # Check if animal exists
+            # 1. Image Payload Validation & Persistence
+            image_candidates = [
+                ("view0", item.get("view0_bytes_base64") or item.get("view0_base64") or item.get("view0BytesBase64")),
+                ("view1", item.get("view1_bytes_base64") or item.get("view1_base64") or item.get("view1BytesBase64")),
+                ("view2", item.get("view2_bytes_base64") or item.get("view2_base64") or item.get("view2BytesBase64")),
+                ("view3", item.get("view3_bytes_base64") or item.get("view3_base64") or item.get("view3BytesBase64")),
+            ]
+
+            nested_images = item.get("images")
+            if isinstance(nested_images, dict):
+                for k in ["view0", "view1", "view2", "view3"]:
+                    if nested_images.get(k):
+                        image_candidates.append((k, nested_images[k]))
+
+            require_images = item.get("require_images", False)
+            has_any_image = any(val for _, val in image_candidates)
+
+            if require_images and not has_any_image:
+                raise ValueError("Offline capture requires image bytes, but no image payload was supplied.")
+
+            saved_images = []
+            for view_name, b64_data in image_candidates:
+                if not b64_data:
+                    continue
+                try:
+                    if "," in b64_data:
+                        b64_data = b64_data.split(",", 1)[1]
+                    raw_bytes = base64.b64decode(b64_data)
+                    if len(raw_bytes) == 0:
+                        raise ValueError(f"Empty image bytes for {view_name}")
+
+                    # Validate readable image
+                    with Image.open(io.BytesIO(raw_bytes)) as pil_img:
+                        pil_img.verify()
+
+                    dest_dir = storage_root / animal_id
+                    dest_dir.mkdir(parents=True, exist_ok=True)
+                    safe_capture = "".join(c for c in str(capture_id) if c.isalnum() or c in ("-", "_"))
+                    file_path = dest_dir / f"{safe_capture}_{view_name}.jpg"
+                    with open(file_path, "wb") as f:
+                        f.write(raw_bytes)
+                    saved_images.append(str(file_path))
+                except Exception as img_err:
+                    raise ValueError(f"Invalid image payload for {view_name}: {str(img_err)}")
+
+            # 2. Check if animal exists or enroll
             existing = get_animal_from_db(animal_id)
             if not existing:
                 try:
@@ -346,11 +400,11 @@ def sync_offline_batch_to_db(captures: List[Dict[str, Any]]) -> Dict[str, Any]:
                     species=spec_enum,
                     farm_id=farm_id,
                     scale_weight_kg=weight_val if weight_val and weight_val > 0 else None,
-                    notes=f"Auto-enrolled from edge capture queue (ID: {queue_id})",
+                    notes=f"Auto-enrolled from edge capture queue (ID: {capture_id})",
                 )
                 save_animal_to_db(new_animal)
 
-            # Record measurement if weight present
+            # 3. Record measurement if weight present
             if weight_val and float(weight_val) > 0:
                 meas = MeasurementRecord(
                     measurement_id=f"M-SYNC-{uuid.uuid4().hex[:8]}",
@@ -361,17 +415,20 @@ def sync_offline_batch_to_db(captures: List[Dict[str, Any]]) -> Dict[str, Any]:
                     operator_name=item.get("operator_name", "Edge Field Node"),
                     device_model="OfflineEdgeCaptureSync",
                     timestamp=now_iso,
-                    notes=f"Synced from edge queue {queue_id}",
+                    notes=f"Synced from edge queue {capture_id}",
                 )
                 save_measurement_to_db(meas)
 
             synced.append({
+                "capture_id": capture_id,
                 "queue_id": queue_id,
                 "animal_id": animal_id,
                 "status": "SYNCED",
+                "saved_images": saved_images,
             })
         except Exception as e:
             failed.append({
+                "capture_id": capture_id,
                 "queue_id": queue_id,
                 "animal_id": animal_id,
                 "status": "FAILED",

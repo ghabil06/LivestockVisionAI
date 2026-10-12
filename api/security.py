@@ -86,23 +86,32 @@ def verify_api_key(
     api_key_header: Optional[str] = Security(API_KEY_HEADER),
 ) -> bool:
     """
-    Validates API key for protected routes if API key auth is enabled.
-    Checks environment variable LIVESTOCK_API_KEY, configuration file, or defaults.
+    Validates API key for protected routes.
+    In production environments (LIVESTOCK_ENV=production or LIVESTOCK_REQUIRE_AUTH=true),
+    authentication is strictly enforced.
+    In development/testing environments, authentication is active when LIVESTOCK_API_KEY
+    is configured, or can be enabled via platform configuration.
     """
     from LivestockVisionAI.api.dependencies import get_platform_config
     cfg = get_platform_config()
     sec_cfg = cfg.get("security", {})
     
-    # Check if auth required (disabled by default in dev/test)
-    auth_enabled = sec_cfg.get("api_key_enabled", False)
-    env_key = os.environ.get("LIVESTOCK_API_KEY")
-    if env_key:
-        auth_enabled = True
+    app_env = os.environ.get("LIVESTOCK_ENV", sec_cfg.get("environment", "development")).strip().lower()
+    require_auth_flag = os.environ.get("LIVESTOCK_REQUIRE_AUTH", "").strip().lower() in ("true", "1", "yes")
+
+    # Production deployments or explicit LIVESTOCK_REQUIRE_AUTH strictly require authentication
+    auth_enabled = (
+        app_env == "production"
+        or require_auth_flag
+        or sec_cfg.get("api_key_enabled", False)
+        or bool(os.environ.get("LIVESTOCK_API_KEY"))
+    )
 
     if not auth_enabled:
         return True
 
     valid_keys = set(sec_cfg.get("api_keys", []))
+    env_key = os.environ.get("LIVESTOCK_API_KEY")
     if env_key:
         valid_keys.add(env_key)
 

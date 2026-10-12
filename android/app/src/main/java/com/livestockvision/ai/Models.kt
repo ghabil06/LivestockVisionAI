@@ -134,12 +134,46 @@ data class OfflineCaptureEntity(
     val syncAttempts: Int = 0
 )
 
+data class SyncCapturePayload(
+    @SerializedName("capture_id") val captureId: String,
+    @SerializedName("animal_id") val animalId: String,
+    val species: String,
+    @SerializedName("farm_id") val farmId: String? = null,
+    val timestamp: Long = System.currentTimeMillis(),
+    @SerializedName("view0_path") val view0Path: String? = null,
+    @SerializedName("view1_path") val view1Path: String? = null,
+    @SerializedName("view2_path") val view2Path: String? = null,
+    @SerializedName("view3_path") val view3Path: String? = null,
+    @SerializedName("view0_bytes_base64") val view0BytesBase64: String? = null,
+    @SerializedName("view1_bytes_base64") val view1BytesBase64: String? = null,
+    @SerializedName("view2_bytes_base64") val view2BytesBase64: String? = null,
+    @SerializedName("view3_bytes_base64") val view3BytesBase64: String? = null,
+    @SerializedName("scale_weight_kg") val scaleWeightKg: Float? = null,
+    @SerializedName("operator_name") val operatorName: String? = null
+)
+
 data class SyncBatchRequest(
-    val captures: List<OfflineCaptureEntity>
+    val captures: List<SyncCapturePayload>
+)
+
+data class SyncedItemAck(
+    @SerializedName("capture_id") val captureId: String,
+    @SerializedName("animal_id") val animalId: String? = null,
+    val status: String = "SYNCED",
+    @SerializedName("saved_images") val savedImages: List<String>? = null
+)
+
+data class FailedItemAck(
+    @SerializedName("capture_id") val captureId: String,
+    @SerializedName("animal_id") val animalId: String? = null,
+    val status: String = "FAILED",
+    val error: String? = null
 )
 
 data class SyncBatchResponse(
-    val status: String,
-    @SerializedName("synced_count") val syncedCount: Int,
-    @SerializedName("failed_count") val failedCount: Int
+    @SerializedName("total_submitted") val totalSubmitted: Int = 0,
+    @SerializedName("synced_count") val syncedCount: Int = 0,
+    @SerializedName("failed_count") val failedCount: Int = 0,
+    @SerializedName("synced_items") val syncedItems: List<SyncedItemAck> = emptyList(),
+    @SerializedName("failed_items") val failedItems: List<FailedItemAck> = emptyList()
 )

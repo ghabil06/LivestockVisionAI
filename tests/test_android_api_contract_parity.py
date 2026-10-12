@@ -150,19 +150,147 @@ def test_android_activity_screens_and_manifest_exist():
 
 
 def test_android_sync_worker_contract():
-    """Verifies that SyncWorker.kt actually calls the sync API before marking synced."""
+    """Verifies that SyncWorker.kt uploads image bytes and checks per-item server acknowledgement."""
     sync_worker_file = PROJECT_ROOT / "android" / "app" / "src" / "main" / "java" / "com" / "livestockvision" / "ai" / "SyncWorker.kt"
+    models_file = PROJECT_ROOT / "android" / "app" / "src" / "main" / "java" / "com" / "livestockvision" / "ai" / "Models.kt"
     assert sync_worker_file.exists(), "SyncWorker.kt missing"
+    assert models_file.exists(), "Models.kt missing"
+
     code = sync_worker_file.read_text(encoding="utf-8")
+    models_code = models_file.read_text(encoding="utf-8")
 
     # Must invoke the remote sync endpoint
     assert "syncOfflineQueue" in code, "SyncWorker must invoke apiService.syncOfflineQueue()"
-    # Must check response success
-    assert "response.isSuccessful" in code, "SyncWorker must verify response.isSuccessful before marking synced"
-    # Must only mark synced upon confirmation
-    assert "markSynced" in code
-    # Must handle failure with attempt tracking
-    assert "syncAttempts" in code, "SyncWorker must increment syncAttempts on failure"
+    # Must encode image bytes from file
+    assert "encodeFileToBase64" in code, "SyncWorker must read and encode image bytes for upload"
+    assert "view0BytesBase64" in code, "SyncWorker must pass image bytes payload in SyncCapturePayload"
+
+    # Must inspect per-item acknowledgement, NOT just response.isSuccessful
+    assert "body.syncedItems.any" in code, "SyncWorker must verify per-item acknowledgement in syncedItems"
+    assert "body.failedItems.any" in code, "SyncWorker must check whether item is listed in failedItems"
+    assert "isConfirmed && !isFailed" in code, "SyncWorker must only mark synced when confirmed and not failed"
+
+    # Models must include per-item acknowledgement DTOs
+    assert "data class SyncedItemAck" in models_code
+    assert "data class FailedItemAck" in models_code
+    assert "syncedItems: List<SyncedItemAck>" in models_code
+    assert "failedItems: List<FailedItemAck>" in models_code
+
+
+def test_offline_sync_with_image_payload_behavioral():
+    """Behavioral test: asserts that actual image bytes sent to /api/v1/animals/sync/queue are persisted."""
+    import base64
+    import uuid
+    import shutil
+
+    # Create dummy JPEG image
+    arr = (np.ones((64, 64, 3), dtype=np.uint8) * 128)
+    buf = io.BytesIO()
+    Image.fromarray(arr).save(buf, format="JPEG")
+    img_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
+
+    capture_id = f"CAP-IMG-{uuid.uuid4().hex[:6]}"
+    animal_id = f"COW-SYNC-{uuid.uuid4().hex[:4].upper()}"
+
+    payload = {
+        "captures": [
+            {
+                "capture_id": capture_id,
+                "animal_id": animal_id,
+                "species": "COW",
+                "farm_id": "FARM-SYNC-01",
+                "scale_weight_kg": 340.5,
+                "view0_bytes_base64": img_b64,
+            }
+        ]
+    }
+
+    res = CLIENT.post("/api/v1/animals/sync/queue", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+
+    assert data["total_submitted"] == 1
+    assert data["synced_count"] == 1
+    assert data["failed_count"] == 0
+    assert len(data["synced_items"]) == 1
+    assert data["synced_items"][0]["capture_id"] == capture_id
+
+    # Verify image was stored on disk
+    saved_images = data["synced_items"][0].get("saved_images", [])
+    assert len(saved_images) == 1
+    saved_path = Path(saved_images[0])
+    assert saved_path.exists(), f"Image file {saved_path} was not persisted on disk"
+    assert saved_path.stat().st_size > 0
+
+    # Clean up
+    CLIENT.delete(f"/api/v1/animals/{animal_id}")
+    if saved_path.parent.exists():
+        shutil.rmtree(saved_path.parent, ignore_errors=True)
+
+
+def test_offline_sync_partial_failure_behavioral():
+    """Behavioral test: asserts HTTP 200 with partial failures returns exact per-item ACKs."""
+    import base64
+    import uuid
+
+    # Valid image
+    arr = (np.ones((64, 64, 3), dtype=np.uint8) * 100)
+    buf = io.BytesIO()
+    Image.fromarray(arr).save(buf, format="JPEG")
+    valid_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
+
+    cap_ok = f"CAP-OK-{uuid.uuid4().hex[:6]}"
+    animal_ok = f"COW-OK-{uuid.uuid4().hex[:4].upper()}"
+
+    cap_fail = f"CAP-FAIL-{uuid.uuid4().hex[:6]}"
+    animal_fail = f"COW-FAIL-{uuid.uuid4().hex[:4].upper()}"
+
+    payload = {
+        "captures": [
+            {
+                "capture_id": cap_ok,
+                "animal_id": animal_ok,
+                "species": "COW",
+                "scale_weight_kg": 320.0,
+                "view0_bytes_base64": valid_b64,
+            },
+            {
+                "capture_id": cap_fail,
+                "animal_id": animal_fail,
+                "species": "COW",
+                "scale_weight_kg": 310.0,
+                "view0_bytes_base64": "CORRUPT_NOT_VALID_IMAGE_DATA_12345",
+            },
+        ]
+    }
+
+    res = CLIENT.post("/api/v1/animals/sync/queue", json=payload)
+    assert res.status_code == 200, "Server must return HTTP 200 even with partial failure"
+    data = res.json()
+
+    assert data["total_submitted"] == 2
+    assert data["synced_count"] == 1
+    assert data["failed_count"] == 1
+
+    # Verify per-item isolation
+    synced_ids = [item["capture_id"] for item in data["synced_items"]]
+    failed_ids = [item["capture_id"] for item in data["failed_items"]]
+
+    assert cap_ok in synced_ids
+    assert cap_fail not in synced_ids
+    assert cap_fail in failed_ids
+
+    # Client verification simulation: an HTTP 200 with failed_count > 0 must NOT mark cap_fail as synced
+    client_synced = set()
+    for item_id in [cap_ok, cap_fail]:
+        if item_id in synced_ids and item_id not in failed_ids:
+            client_synced.add(item_id)
+
+    assert cap_ok in client_synced
+    assert cap_fail not in client_synced, "Failed capture must never be marked synced!"
+
+    # Clean up
+    CLIENT.delete(f"/api/v1/animals/{animal_ok}")
 
 
 def test_android_api_client_release_hardening():
@@ -185,9 +313,32 @@ def test_android_api_client_release_hardening():
 
 
 def test_single_canonical_inference_architecture():
-    """Verifies that duplicate local inference engine is removed, enforcing the single API inference path."""
+    """Verifies that duplicate local inference engine and dead ONNX assets are removed."""
     ai_dir = PROJECT_ROOT / "android" / "app" / "src" / "main" / "java" / "com" / "livestockvision" / "ai"
+    assets_dir = PROJECT_ROOT / "android" / "app" / "src" / "main" / "assets"
+    gradle_file = PROJECT_ROOT / "android" / "app" / "build.gradle.kts"
+
+    # 1. No InferenceEngine.kt
     inference_engine_file = ai_dir / "InferenceEngine.kt"
     assert not inference_engine_file.exists(), "InferenceEngine.kt must not exist; API is the single canonical inference path"
+
+    # 2. No unused ONNX assets in android app
+    if assets_dir.exists():
+        onnx_files = list(assets_dir.glob("*.onnx"))
+        assert len(onnx_files) == 0, f"Android assets should not contain unused ONNX models: {onnx_files}"
+
+    # 3. No onnxruntime dependency in build.gradle.kts
+    gradle_text = gradle_file.read_text(encoding="utf-8")
+    assert "com.microsoft.onnxruntime" not in gradle_text, "Android app must not depend on onnxruntime; API is canonical"
+
+
+def test_android_gradle_wrapper_files_exist():
+    """Verifies that the Android Gradle wrapper files exist for reproducible builds."""
+    android_dir = PROJECT_ROOT / "android"
+    assert (android_dir / "gradlew").exists(), "android/gradlew must exist"
+    assert (android_dir / "gradlew.bat").exists(), "android/gradlew.bat must exist"
+    assert (android_dir / "gradle" / "wrapper" / "gradle-wrapper.jar").exists(), "gradle-wrapper.jar must exist"
+    assert (android_dir / "gradle" / "wrapper" / "gradle-wrapper.properties").exists(), "gradle-wrapper.properties must exist"
+
 
 

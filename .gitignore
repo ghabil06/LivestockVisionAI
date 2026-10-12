@@ -68,6 +68,7 @@ build/
 
 # External raw dataset junctions & archives
 data/storage/cattle_dataset
+data/storage/offline_sync/
 *.rar
 *.zip
 *.tar.gz

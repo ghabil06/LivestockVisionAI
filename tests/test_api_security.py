@@ -125,10 +125,41 @@ def test_endpoint_auth_enforced_when_enabled(client, monkeypatch):
 def test_endpoint_auth_disabled_by_default(client, monkeypatch):
     """Verifies that endpoints remain accessible when auth is not configured (dev/test default)."""
     monkeypatch.delenv("LIVESTOCK_API_KEY", raising=False)
+    monkeypatch.delenv("LIVESTOCK_ENV", raising=False)
+    monkeypatch.delenv("LIVESTOCK_REQUIRE_AUTH", raising=False)
 
     res = client.post(
         "/api/v1/predict/age",
         data={"species": "COW", "dentition_incisor_pairs": 2},
     )
     assert res.status_code == 200
+
+
+def test_production_environment_forces_auth(client, monkeypatch):
+    """Verifies that setting LIVESTOCK_ENV=production enforces API authentication."""
+    monkeypatch.setenv("LIVESTOCK_ENV", "production")
+    monkeypatch.delenv("LIVESTOCK_API_KEY", raising=False)
+
+    # Protected endpoint without API key must return 401 in production
+    res = client.post(
+        "/api/v1/predict/age",
+        data={"species": "COW", "dentition_incisor_pairs": 2},
+    )
+    assert res.status_code == 401
+    assert "Invalid or missing API key" in res.json()["detail"]
+
+
+def test_require_auth_flag_forces_auth(client, monkeypatch):
+    """Verifies that LIVESTOCK_REQUIRE_AUTH=true enforces API authentication."""
+    monkeypatch.setenv("LIVESTOCK_REQUIRE_AUTH", "true")
+    monkeypatch.delenv("LIVESTOCK_API_KEY", raising=False)
+
+    # Sync endpoint without API key must return 401
+    res = client.post(
+        "/api/v1/animals/sync/queue",
+        json={"captures": []},
+    )
+    assert res.status_code == 401
+    assert "Invalid or missing API key" in res.json()["detail"]
+
 

@@ -61,9 +61,6 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
     implementation("androidx.camera:camera-view:$cameraxVersion")
 
-    // ONNX Runtime Android (Edge Mobile Inference)
-    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.17.0")
-
     // Room Database (Offline SQLite queue)
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
