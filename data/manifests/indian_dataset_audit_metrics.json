@@ -1,0 +1,87 @@
+{
+  "archive_path": "C:\\Users\\GHABILAADITHYAA P\\Downloads\\Annotated Multiview Image Dataset of Prominent Ind.zip",
+  "total_files_in_archive": 7226,
+  "unique_images_count": 4975,
+  "duplicate_files_count": 2251,
+  "overall_duplication_rate_pct": 31.2,
+  "non_image_annotation_files_count": 0,
+  "label_modality_status": {
+    "weight_labels": "COMPLETELY_ABSENT (0%)",
+    "age_labels": "COMPLETELY_ABSENT (0%)",
+    "dentition_labels": "COMPLETELY_ABSENT (0%)",
+    "animal_id_tracking": "UNTRACKED (Sequential filenames)",
+    "camera_metadata": "STRIPPED (All uniform 800x600 pixels)"
+  },
+  "breed_statistics": {
+    "Bargur": {
+      "total_files": 470,
+      "unique_images": 470,
+      "duplicate_files": 0,
+      "duplication_rate_pct": 0.0
+    },
+    "Gir": {
+      "total_files": 3648,
+      "unique_images": 2443,
+      "duplicate_files": 1205,
+      "duplication_rate_pct": 33.0
+    },
+    "Hallikar": {
+      "total_files": 1951,
+      "unique_images": 937,
+      "duplicate_files": 1014,
+      "duplication_rate_pct": 52.0
+    },
+    "Ongole": {
+      "total_files": 343,
+      "unique_images": 311,
+      "duplicate_files": 32,
+      "duplication_rate_pct": 9.3
+    },
+    "Tharparkar": {
+      "total_files": 814,
+      "unique_images": 814,
+      "duplicate_files": 0,
+      "duplication_rate_pct": 0.0
+    }
+  },
+  "tamil_nadu_breed_coverage": {
+    "KANGAYAM": {
+      "description": "Tiruppur / Karur / Erode draught cattle (Most prominent TN draught breed)",
+      "present_in_dataset": false,
+      "unique_images": 0,
+      "status": "MISSING_CRITICAL_GAP"
+    },
+    "BARGUR": {
+      "description": "Anthiyur / Bhavani hills (Erode district hill draught cattle)",
+      "present_in_dataset": true,
+      "unique_images": 470,
+      "status": "AVAILABLE"
+    },
+    "UMBLACHERY": {
+      "description": "Nagapattinam / Thiruvarur (Cauvery delta dwarf draught breed)",
+      "present_in_dataset": false,
+      "unique_images": 0,
+      "status": "MISSING_CRITICAL_GAP"
+    },
+    "PULIKULAM": {
+      "description": "Madurai / Sivagangai (Indigenous Jallikattu cattle breed)",
+      "present_in_dataset": false,
+      "unique_images": 0,
+      "status": "MISSING_CRITICAL_GAP"
+    },
+    "ALAMBADI": {
+      "description": "Dharmapuri / Salem (Hilly draught breed)",
+      "present_in_dataset": false,
+      "unique_images": 0,
+      "status": "MISSING_CRITICAL_GAP"
+    }
+  },
+  "operational_verdict": {
+    "suitable_for_weight_estimation": false,
+    "suitable_for_age_estimation": false,
+    "suitable_for_multiview_fusion": false,
+    "suitable_for_breed_classification": true,
+    "condition_for_use": "Must purge all 2,251 duplicate images prior to train/test partitioning.",
+    "policy_restriction": "Strictly prohibit claiming Tamil Nadu breed support until Kangayam, Umblachery, Pulikulam, and Alambadi are collected."
+  }
+}

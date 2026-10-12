@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-10-12T08:30:10Z",
+  "onnx_available": true,
+  "ort_available": true,
+  "models": {
+    "species_classifier": {
+      "fp32_mb": 42.62,
+      "int8_mb": 10.7,
+      "compression_pct": 74.9
+    },
+    "single_view_weight": {
+      "fp32_mb": 42.61,
+      "int8_mb": 10.7,
+      "compression_pct": 74.9
+    },
+    "multiview_weight": {
+      "fp32_mb": 43.19,
+      "int8_mb": 10.87,
+      "compression_pct": 74.8
+    }
+  },
+  "parity": {
+    "species_classifier": {
+      "status": "PASSED",
+      "max_prob_discrepancy": 0.0,
+      "class_match_rate": 1.0,
+      "tolerance_prob": 0.005,
+      "passed": true
+    },
+    "cattle_weight_regressor": {
+      "status": "PASSED",
+      "max_discrepancy_kg": 2e-06,
+      "mean_discrepancy_kg": 1e-06,
+      "tolerance_kg": 0.1,
+      "num_samples": 20,
+      "passed": true
+    }
+  },
+  "latency": {
+    "species_classifier": {
+      "fp32_latency_ms": 328.69,
+      "int8_latency_ms": 326.47,
+      "speedup_factor": 1.01,
+      "num_runs": 25
+    },
+    "cattle_weight_regressor": {
+      "fp32_latency_ms": 193.37,
+      "int8_latency_ms": 308.09,
+      "speedup_factor": 0.63,
+      "num_runs": 25
+    }
+  },
+  "android_apk_budget": {
+    "base_apk_size_mb": 14.5,
+    "quantized_models_size_mb": 21.4,
+    "total_apk_size_mb": 35.9,
+    "max_play_store_budget_mb": 50.0,
+    "within_budget": true,
+    "estimated_ram_usage_mb": 85.0,
+    "target_os": "Android 9.0 (API 28) - Android 15 (API 35)",
+    "hardware_acceleration": "Android NNAPI / Qualcomm Hexagon NPU / ARM Mali GPU"
+  }
+}

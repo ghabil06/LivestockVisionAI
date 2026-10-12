@@ -1,0 +1,109 @@
+{
+  "total_animals": 720,
+  "overall_coverage_90_pct": 95.8,
+  "overall_coverage_95_pct": 99.2,
+  "initial_quality_rejections": 87,
+  "initial_rejection_rate_pct": 12.1,
+  "species_breakdown": {
+    "COW": {
+      "count": 180,
+      "mae_kg": 21.4,
+      "mae_g": null,
+      "rmse_kg": 28.767,
+      "coverage_90_pct": 92.8,
+      "coverage_95_pct": 98.9
+    },
+    "HEN": {
+      "count": 200,
+      "mae_kg": 0.098,
+      "mae_g": 97.6,
+      "rmse_kg": 0.127,
+      "coverage_90_pct": 95.5,
+      "coverage_95_pct": 99.0
+    },
+    "GOAT": {
+      "count": 180,
+      "mae_kg": 2.045,
+      "mae_g": null,
+      "rmse_kg": 2.564,
+      "coverage_90_pct": 96.7,
+      "coverage_95_pct": 99.4
+    },
+    "SHEEP": {
+      "count": 160,
+      "mae_kg": 1.994,
+      "mae_g": null,
+      "rmse_kg": 2.584,
+      "coverage_90_pct": 98.8,
+      "coverage_95_pct": 99.4
+    }
+  },
+  "site_breakdown": {
+    "TN-01-COIMBATORE": {
+      "count": 150,
+      "species_represented": [
+        "COW"
+      ],
+      "initial_quality_rejections": 22,
+      "quality_pass_rate_pct": 85.3,
+      "coverage_90_pct": 91.3
+    },
+    "TN-02-MADURAI": {
+      "count": 300,
+      "species_represented": [
+        "GOAT",
+        "SHEEP"
+      ],
+      "initial_quality_rejections": 45,
+      "quality_pass_rate_pct": 85.0,
+      "coverage_90_pct": 97.3
+    },
+    "TN-03-ERODE": {
+      "count": 180,
+      "species_represented": [
+        "HEN"
+      ],
+      "initial_quality_rejections": 20,
+      "quality_pass_rate_pct": 88.9,
+      "coverage_90_pct": 95.6
+    },
+    "TN-04-SALEM": {
+      "count": 90,
+      "species_represented": [
+        "COW",
+        "GOAT",
+        "SHEEP",
+        "HEN"
+      ],
+      "initial_quality_rejections": 0,
+      "quality_pass_rate_pct": 100.0,
+      "coverage_90_pct": 98.9
+    }
+  },
+  "statistical_power_analysis": {
+    "Cattle": {
+      "sample_size": 180,
+      "std_deviation_kg": 17.5,
+      "target_margin_kg": 4.5,
+      "statistical_power": 0.9319,
+      "power_pct": 93.2,
+      "adequate_power": true
+    },
+    "Small_Ruminants": {
+      "sample_size": 340,
+      "std_deviation_kg": 2.1,
+      "target_margin_kg": 0.4,
+      "statistical_power": 0.9397,
+      "power_pct": 94.0,
+      "adequate_power": true
+    },
+    "Poultry": {
+      "sample_size": 200,
+      "std_deviation_kg": 0.125,
+      "target_margin_kg": 0.03,
+      "statistical_power": 0.9242,
+      "power_pct": 92.4,
+      "adequate_power": true
+    }
+  }
+}

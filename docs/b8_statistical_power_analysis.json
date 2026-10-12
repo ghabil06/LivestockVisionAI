@@ -1,0 +1,26 @@
+{
+  "Cattle": {
+    "sample_size": 180,
+    "std_deviation_kg": 17.5,
+    "target_margin_kg": 4.5,
+    "statistical_power": 0.9319,
+    "power_pct": 93.2,
+    "adequate_power": true
+  },
+  "Small_Ruminants": {
+    "sample_size": 340,
+    "std_deviation_kg": 2.1,
+    "target_margin_kg": 0.4,
+    "statistical_power": 0.9397,
+    "power_pct": 94.0,
+    "adequate_power": true
+  },
+  "Poultry": {
+    "sample_size": 200,
+    "std_deviation_kg": 0.125,
+    "target_margin_kg": 0.03,
+    "statistical_power": 0.9242,
+    "power_pct": 92.4,
+    "adequate_power": true
+  }
+}

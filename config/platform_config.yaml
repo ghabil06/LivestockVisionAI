@@ -1,0 +1,65 @@
+platform:
+  name: "LivestockVisionAI"
+  version: "1.0.0-rc1"
+  description: "Enterprise Multi-Species Livestock Vision AI Platform"
+
+supported_species:
+  - COW
+  - HEN
+  - GOAT
+  - SHEEP
+
+quality_filter:
+  min_laplacian_variance: 100.0      # Sharpness threshold; < 100 triggers REJECTED_BLUR
+  min_bbox_area_ratio: 0.15          # Animal must occupy at least 15% of frame
+  max_bbox_area_ratio: 0.88          # Over 88% indicates severe close-up truncation
+  min_brightness_mean: 40.0          # Below 40 is underexposed / dark
+  max_brightness_mean: 225.0         # Above 225 is overexposed / washed out
+  rejection_message: "Unable to estimate reliably"
+
+species_boundaries:
+  COW:
+    weight_min_kg: 35.0
+    weight_max_kg: 1200.0
+    max_dentition_pairs: 4
+    required_views: ["LATERAL_LEFT", "LATERAL_RIGHT"]
+  HEN:
+    weight_min_kg: 0.15
+    weight_max_kg: 7.5
+    max_dentition_pairs: 0
+    required_views: ["LATERAL_LEFT"]
+  GOAT:
+    weight_min_kg: 4.0
+    weight_max_kg: 140.0
+    max_dentition_pairs: 4
+    required_views: ["LATERAL_LEFT"]
+  SHEEP:
+    weight_min_kg: 4.0
+    weight_max_kg: 160.0
+    max_dentition_pairs: 4
+    required_views: ["LATERAL_LEFT"]
+
+conformal_uncertainty:
+  alpha_levels:
+    - 0.10   # 90% prediction interval
+    - 0.05   # 95% prediction interval
+  require_calibration: true
+  min_calibration_samples: 30
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  reload: false
+
+security:
+  api_key_enabled: false  # Set to true in production deployments
+  api_keys:
+    - "live_sk_test_key_livestockvisionai_2026"
+  rate_limiting:
+    enabled: true
+    max_requests_per_minute: 120
+  allowed_origins:
+    - "http://localhost:3000"
+    - "http://localhost:8000"
+    - "http://127.0.0.1:8000"
+

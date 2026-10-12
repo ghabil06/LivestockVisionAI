@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:background="#F8F9FA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/text_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Inference Result"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#198754" />
+
+        <TextView
+            android:id="@+id/text_species"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Species: --"
+            android:textSize="18sp"
+            android:textColor="#212529" />
+
+        <TextView
+            android:id="@+id/text_weight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="-- kg"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="#0D6EFD" />
+
+        <TextView
+            android:id="@+id/text_interval_90"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="90% Confidence Interval: --"
+            android:textSize="14sp"
+            android:textColor="#6C757D" />
+
+        <TextView
+            android:id="@+id/text_interval_95"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="95% Confidence Interval: --"
+            android:textSize="14sp"
+            android:textColor="#6C757D" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="#DEE2E6" />
+
+        <TextView
+            android:id="@+id/text_age"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Age: Requires dental examination"
+            android:textSize="15sp"
+            android:textColor="#495057" />
+
+        <TextView
+            android:id="@+id/text_warning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:padding="12dp"
+            android:background="#FFF3CD"
+            android:textColor="#664D03"
+            android:text="CAUTION: Heavy animal. Use certified scale for commercial trade."
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/text_rejection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:padding="12dp"
+            android:background="#F8D7DA"
+            android:textColor="#842029"
+            android:text="Unable to estimate reliably."
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btn_done"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Done / Save Scan" />
+
+    </LinearLayout>
+</ScrollView>

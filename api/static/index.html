@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LivestockVisionAI Platform Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .hero { background: linear-gradient(135deg, #0f392b 0%, #1e5e3a 100%); color: white; padding: 2rem 0; margin-bottom: 1.5rem; border-radius: 0 0 16px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+        .card { border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.04); margin-bottom: 1.5rem; }
+        .card-header { background-color: #ffffff; border-bottom: 1px solid #edf2f7; font-weight: 600; font-size: 1.05rem; }
+        .interval-box { background: #f0fdf4; border-left: 5px solid #16a34a; padding: 1.25rem; border-radius: 6px; margin-top: 1rem; }
+        .rejection-box { background: #fef2f2; border-left: 5px solid #dc2626; padding: 1.25rem; border-radius: 6px; margin-top: 1rem; }
+        .preview-img { max-height: 140px; border-radius: 6px; object-fit: contain; width: 100%; border: 1px dashed #cbd5e1; background: #f1f5f9; }
+        .thumb-col { position: relative; }
+        .view-label { font-size: 0.75rem; font-weight: 600; color: #475569; margin-top: 4px; text-align: center; }
+        .nav-tabs .nav-link { color: #475569; font-weight: 500; border: none; border-bottom: 3px solid transparent; }
+        .nav-tabs .nav-link.active { color: #15803d; font-weight: 600; border-bottom: 3px solid #15803d; background: transparent; }
+        .conformal-bar-container { background: #e2e8f0; border-radius: 8px; height: 18px; position: relative; margin: 12px 0 6px 0; }
+        .conformal-bar-fill { background: linear-gradient(90deg, #86efac, #22c55e); height: 100%; border-radius: 8px; }
+        .conformal-point { width: 4px; height: 26px; background: #0f172a; position: absolute; top: -4px; border-radius: 2px; }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h2 class="fw-bold mb-1">LivestockVisionAI Platform</h2>
+                <p class="mb-0 text-white-50">Enterprise Multi-Species Computer Vision Platform | Calibrated Weight & Age Biometrics</p>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+                <span class="badge bg-light text-dark p-2">Species: Cow, Hen, Goat, Sheep</span>
+                <span class="badge bg-success p-2">Conformal: 90% & 95%</span>
+                <span class="badge bg-info text-dark p-2" id="headerQueueBadge">Edge Queue: Active</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <!-- Platform Navigation Tabs -->
+    <ul class="nav nav-tabs mb-4" id="mainTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="appraisal-tab" data-bs-toggle="tab" data-bs-target="#appraisal" type="button" role="tab">Live Vision Appraisal</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="age-tab" data-bs-toggle="tab" data-bs-target="#age" type="button" role="tab">Biological Age Staging</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="roster-tab" data-bs-toggle="tab" data-bs-target="#roster" type="button" role="tab">Animal Registry</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="sync-tab" data-bs-toggle="tab" data-bs-target="#sync" type="button" role="tab">Offline Sync Monitor</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab">Audit Logs</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="mainTabContent">
+        <!-- 1. LIVE VISION APPRAISAL TAB -->
+        <div class="tab-pane fade show active" id="appraisal" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>Capture Upload & Multi-View Fusion</span>
+                            <span class="badge bg-primary">Quality Gate Enforced</span>
+                        </div>
+                        <div class="card-body">
+                            <form id="weightForm">
+                                <!-- Multi-View Image Inputs -->
+                                <label class="form-label fw-semibold mb-2">1. Body Perspective Captures (1 to 4 Views)</label>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6 col-md-3 thumb-col">
+                                        <input type="file" class="form-control form-control-sm mb-1" id="fileView0" accept="image/*" required>
+                                        <img id="prevView0" class="preview-img" alt="View 0">
+                                        <div class="view-label">View 0 (Left Lateral)*</div>
+                                    </div>
+                                    <div class="col-6 col-md-3 thumb-col">
+                                        <input type="file" class="form-control form-control-sm mb-1" id="fileView1" accept="image/*">
+                                        <img id="prevView1" class="preview-img" alt="View 1">
+                                        <div class="view-label">View 1 (Right Lateral)</div>
+                                    </div>
+                                    <div class="col-6 col-md-3 thumb-col">
+                                        <input type="file" class="form-control form-control-sm mb-1" id="fileView2" accept="image/*">
+                                        <img id="prevView2" class="preview-img" alt="View 2">
+                                        <div class="view-label">View 2 (Cranial)</div>
+                                    </div>
+                                    <div class="col-6 col-md-3 thumb-col">
+                                        <input type="file" class="form-control form-control-sm mb-1" id="fileView3" accept="image/*">
+                                        <img id="prevView3" class="preview-img" alt="View 3">
+                                        <div class="view-label">View 3 (Caudal)</div>
+                                    </div>
+                                </div>
+
+                                <!-- Species & Reference -->
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">2. Target Species</label>
+                                        <select class="form-select" id="speciesSelect">
+                                            <option value="" selected>Auto-Detect Species (AI)</option>
+                                            <option value="COW">Cattle (Cow)</option>
+                                            <option value="HEN">Poultry (Hen)</option>
+                                            <option value="GOAT">Caprine (Goat)</option>
+                                            <option value="SHEEP">Ovine (Sheep)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">3. Optional Prior Weight (kg)</label>
+                                        <input type="number" step="0.1" class="form-control" id="refWeightInput" placeholder="Baseline estimate">
+                                    </div>
+                                </div>
+
+                                <!-- Dynamic Species-Specific Parameters -->
+                                <!-- Cattle -->
+                                <div class="mb-3" id="cowOptions">
+                                    <label class="form-label fw-semibold">Withers Height (cm) (Optional)</label>
+                                    <input type="number" step="0.5" class="form-control" id="withersHeightInput" placeholder="e.g. 122.5">
+                                </div>
+
+                                <!-- Poultry -->
+                                <div class="row mb-3" id="henOptions" style="display: none;">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Bird Production Type</label>
+                                        <select class="form-select" id="birdTypeSelect">
+                                            <option value="BROILER">Commercial Broiler (Meat)</option>
+                                            <option value="LAYER">Commercial Layer (Eggs)</option>
+                                            <option value="DUAL_PURPOSE">Dual-Purpose / Indigenous</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Plumage Condition</label>
+                                        <select class="form-select" id="plumageSelect">
+                                            <option value="FULL_PLUMAGE">Full Dense Plumage (Adjust ~4%)</option>
+                                            <option value="MOLTING">Molting / Sparse</option>
+                                            <option value="JUVENILE_DOWN">Juvenile Down</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Goats & Sheep Morphometrics -->
+                                <div class="row mb-3" id="smallRuminantOptions" style="display: none;">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Body Length (cm) (Point of shoulder to pin)</label>
+                                        <input type="number" step="0.5" class="form-control" id="bodyLengthInput" placeholder="e.g. 62.0">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Heart Girth (cm) (Circumference)</label>
+                                        <input type="number" step="0.5" class="form-control" id="heartGirthInput" placeholder="e.g. 66.5">
+                                    </div>
+                                </div>
+
+                                <!-- Sheep Fleece -->
+                                <div class="row mb-3" id="sheepOptions" style="display: none;">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Fleece Depth (cm)</label>
+                                        <input type="number" step="0.5" class="form-control" id="fleeceDepthInput" value="3.0">
+                                    </div>
+                                    <div class="col-md-6 d-flex align-items-center mt-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="isShornCheck">
+                                            <label class="form-check-label" for="isShornCheck">Freshly Shorn (No Fleece Deduction)</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-success w-100 fw-semibold py-2" id="submitBtn">
+                                    Run Quality Screening & Multi-Species Weight Estimation
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appraisal Results Output -->
+                <div class="col-lg-5">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <span>Appraisal Outcome & Uncertainty Analysis</span>
+                        </div>
+                        <div class="card-body">
+                            <div id="resultContainer" style="display: none;"></div>
+                            <div id="emptyResultPlaceholder" class="text-center py-5 text-muted">
+                                <p class="mb-1">📸 Upload capture images and click run to view calibrated appraisal metrics.</p>
+                                <small>Quality gate screens sharpness, exposure, and framing before inference.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. BIOLOGICAL AGE STAGING TAB -->
+        <div class="tab-pane fade" id="age" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <span>Veterinary Biological Age Staging</span>
+                        </div>
+                        <div class="card-body">
+                            <form id="ageForm">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Species</label>
+                                    <select class="form-select" id="ageSpeciesSelect" required>
+                                        <option value="COW">Cattle (Cow)</option>
+                                        <option value="GOAT">Caprine (Goat)</option>
+                                        <option value="SHEEP">Ovine (Sheep)</option>
+                                        <option value="HEN">Poultry (Hen)</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3" id="dentitionGroup">
+                                    <label class="form-label fw-semibold">Erupted Permanent Incisor Pairs (0 to 4)</label>
+                                    <select class="form-select" id="dentitionSelect">
+                                        <option value="0">0 Pairs (Milk teeth only: 0 - 18 months)</option>
+                                        <option value="1">1 Pair (Central incisors: 18 - 24 months)</option>
+                                        <option value="2">2 Pairs (Middle incisors: 24 - 30 months)</option>
+                                        <option value="3">3 Pairs (Lateral incisors: 30 - 36 months)</option>
+                                        <option value="4">4 Pairs (Full mouth: 36 - 96+ months)</option>
+                                    </select>
+                                    <small class="text-muted">Count lower front permanent incisors during oral dental examination.</small>
+                                </div>
+
+                                <div class="mb-3" id="poultryHatchGroup" style="display: none;">
+                                    <label class="form-label fw-semibold">Weeks Since Hatch / Placement</label>
+                                    <input type="number" step="0.5" class="form-control" id="hatchWeeksInput" placeholder="e.g. 16.0 (or upload bird photo)">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Upload Photo for Vision AI (Optional)</label>
+                                    <input type="file" class="form-control" id="ageImageInput" accept="image/*">
+                                    <small class="text-muted" id="ageImageHelp">Oral incisor close-up for ruminants; full bird photo for chickens.</small>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100 fw-semibold py-2" id="ageSubmitBtn">
+                                    Determine Age (Vision AI or Verified Records)
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-header">Biological Staging Outcome</div>
+                        <div class="card-body">
+                            <div id="ageResultContainer" style="display: none;"></div>
+                            <div id="emptyAgePlaceholder" class="text-center py-5 text-muted">
+                                <p class="mb-1">🦷 Casual body photos are strictly rejected.</p>
+                                <small>Ruminants require dental inspection photos; poultry requires flock hatch records.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ANIMAL REGISTRY TAB -->
+        <div class="tab-pane fade" id="roster" role="tabpanel">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <span>Central Animal Registry & Verified Profiles</span>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" id="rosterSpeciesFilter" style="width: 140px;">
+                            <option value="">All Species</option>
+                            <option value="COW">Cattle</option>
+                            <option value="HEN">Poultry</option>
+                            <option value="GOAT">Goat</option>
+                            <option value="SHEEP">Sheep</option>
+                        </select>
+                        <input type="text" class="form-control form-control-sm" id="rosterSearchInput" placeholder="Filter by breed / farm" style="width: 180px;">
+                        <button class="btn btn-sm btn-outline-primary" onclick="loadAnimalsRoster()">Filter</button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="rosterTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Animal ID</th>
+                                    <th>Species</th>
+                                    <th>Farm ID</th>
+                                    <th>Breed</th>
+                                    <th>Sex</th>
+                                    <th>Scale Weight</th>
+                                    <th>Dentition / Age</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rosterTableBody">
+                                <tr><td colspan="8" class="text-center py-3 text-muted">Loading registered animals...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. OFFLINE SYNC MONITOR TAB -->
+        <div class="tab-pane fade" id="sync" role="tabpanel">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Edge Offline Queue & Cloud Reconciliation Status</span>
+                    <button class="btn btn-sm btn-success" onclick="triggerManualSync()">Simulate Edge Batch Sync</button>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <div class="p-3 border rounded text-center bg-light">
+                                <h6 class="text-muted mb-1">Queue Status</h6>
+                                <h4 class="fw-bold text-success" id="syncHealthStatus">HEALTHY</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3 border rounded text-center bg-light">
+                                <h6 class="text-muted mb-1">Edge SQLite Store</h6>
+                                <h4 class="fw-bold text-primary">Connected</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3 border rounded text-center bg-light">
+                                <h6 class="text-muted mb-1">Central Sync Endpoint</h6>
+                                <h4 class="fw-bold text-info">/api/v1/animals/sync/queue</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="p-3 border rounded text-center bg-light">
+                                <h6 class="text-muted mb-1">Audit Policy</h6>
+                                <h4 class="fw-bold text-dark">Strict Zero-Leakage</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="syncResultAlert" style="display: none;"></div>
+                    <div class="alert alert-info mb-0">
+                        <strong>ℹ️ Offline Field Synchronization Protocol:</strong>
+                        Edge captures in remote regions without cell coverage execute on-device quality checks and quantized INT8 inference.
+                        Once online connectivity is detected, pending captures are pushed via batch reconciliation into the central SQLite registry.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. AUDIT LOGS TAB -->
+        <div class="tab-pane fade" id="audit" role="tabpanel">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>Historical Prediction Appraisal Audit Logs</span>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="loadAuditLogs()">Refresh Logs</button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="auditTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Log ID</th>
+                                    <th>Timestamp</th>
+                                    <th>Species</th>
+                                    <th>Quality Gate</th>
+                                    <th>Status</th>
+                                    <th>Estimate</th>
+                                    <th>90% Conformal Interval</th>
+                                    <th>Details / Rejection</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditTableBody">
+                                <tr><td colspan="8" class="text-center py-3 text-muted">Loading audit records...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Preview image handlers
+    ['0', '1', '2', '3'].forEach(id => {
+        const inp = document.getElementById('fileView' + id);
+        const prev = document.getElementById('prevView' + id);
+        if (inp && prev) {
+            inp.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = evt => { prev.src = evt.target.result; };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    });
+
+    // Toggle species-specific options
+    document.getElementById('speciesSelect').addEventListener('change', function(e) {
+        const spec = e.target.value;
+        document.getElementById('cowOptions').style.display = (spec === 'COW' || spec === '') ? 'block' : 'none';
+        document.getElementById('henOptions').style.display = (spec === 'HEN') ? 'flex' : 'none';
+        document.getElementById('smallRuminantOptions').style.display = (spec === 'GOAT' || spec === 'SHEEP') ? 'flex' : 'none';
+        document.getElementById('sheepOptions').style.display = (spec === 'SHEEP') ? 'flex' : 'none';
+    });
+
+    // Toggle poultry age options
+    document.getElementById('ageSpeciesSelect').addEventListener('change', function(e) {
+        const isHen = (e.target.value === 'HEN');
+        document.getElementById('dentitionGroup').style.display = isHen ? 'none' : 'block';
+        document.getElementById('poultryHatchGroup').style.display = isHen ? 'block' : 'none';
+    });
+
+    // Submit Weight Appraisal
+    document.getElementById('weightForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('submitBtn');
+        const resBox = document.getElementById('resultContainer');
+        const emptyPl = document.getElementById('emptyResultPlaceholder');
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Evaluating capture...';
+        resBox.style.display = 'none';
+
+        const formData = new FormData();
+        const f0 = document.getElementById('fileView0').files[0];
+        if (f0) formData.append('file', f0);
+
+        const f1 = document.getElementById('fileView1').files[0];
+        if (f1) formData.append('view_1', f1);
+
+        const f2 = document.getElementById('fileView2').files[0];
+        if (f2) formData.append('view_2', f2);
+
+        const f3 = document.getElementById('fileView3').files[0];
+        if (f3) formData.append('view_3', f3);
+
+        const species = document.getElementById('speciesSelect').value;
+        if (species) formData.append('species', species);
+
+        const refWeight = document.getElementById('refWeightInput').value;
+        if (refWeight) formData.append('reference_weight_kg', refWeight);
+
+        if (species === 'COW' || !species) {
+            const h = document.getElementById('withersHeightInput').value;
+            if (h) formData.append('withers_height_cm', h);
+        } else if (species === 'HEN') {
+            formData.append('bird_type', document.getElementById('birdTypeSelect').value);
+            formData.append('plumage_condition', document.getElementById('plumageSelect').value);
+        } else if (species === 'GOAT' || species === 'SHEEP') {
+            const bl = document.getElementById('bodyLengthInput').value;
+            const hg = document.getElementById('heartGirthInput').value;
+            if (bl) formData.append('body_length_cm', bl);
+            if (hg) formData.append('heart_girth_cm', hg);
+
+            if (species === 'SHEEP') {
+                formData.append('fleece_depth_cm', document.getElementById('fleeceDepthInput').value);
+                formData.append('is_shorn', document.getElementById('isShornCheck').checked);
+            }
+        }
+
+        try {
+            const res = await fetch('/api/v1/predict/weight', { method: 'POST', body: formData });
+            const data = await res.json();
+            emptyPl.style.display = 'none';
+            renderWeightResult(data);
+            loadAuditLogs();
+        } catch (err) {
+            emptyPl.style.display = 'none';
+            resBox.className = 'rejection-box';
+            resBox.innerHTML = `<strong>Error:</strong> Failed to connect to prediction service.`;
+            resBox.style.display = 'block';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Run Quality Screening & Multi-Species Weight Estimation';
+        }
+    });
+
+    function renderWeightResult(data) {
+        const box = document.getElementById('resultContainer');
+        box.style.display = 'block';
+
+        if (data.status === 'REJECTED') {
+            box.className = 'rejection-box';
+            box.innerHTML = `
+                <h5 class="text-danger fw-bold mb-1">Capture Rejected: Unable to Estimate Reliably</h5>
+                <p class="mb-1"><strong>Reason:</strong> ${data.rejection_reason || 'Image quality screening failed.'}</p>
+                <p class="mb-0 text-muted"><strong>Guidance:</strong> ${data.recommendation || 'Please capture a clear, stationary photograph without motion blur.'}</p>
+            `;
+        } else {
+            box.className = 'interval-box';
+            const int90 = data.prediction_intervals ? data.prediction_intervals['90%'] : null;
+            const int95 = data.prediction_intervals ? data.prediction_intervals['95%'] : null;
+            const isHeavy = data.warning_code === 'CAUTION_HEAVY_ANIMAL_USE_PHYSICAL_SCALE';
+            const mvMode = data.metadata ? (data.metadata.multi_view_mode || 'SINGLE_VIEW') : 'SINGLE_VIEW';
+            const viewsCount = data.metadata ? (data.metadata.views_processed || 1) : 1;
+
+            const warningHtml = isHeavy ? `
+                <div class="alert alert-warning border-warning mt-2 mb-2 p-2">
+                    <strong>⚠️ Commercial Trade Caution: Heavy Animal (>300 kg)</strong><br>
+                    <small>${data.warning_message || 'Visual 2D estimation subject to allometric volume compounding and rumen fill. Use certified digital platform scales for trade settlement.'}</small>
+                </div>
+            ` : '';
+
+            const fleeceHtml = (data.metadata && data.metadata.fleece_adjusted) ? `
+                <div class="alert alert-info p-2 mt-2 mb-2">
+                    <small>✂️ Fleece Depth Adjusted (${data.metadata.fleece_depth_cm} cm): Deducted ~${data.metadata.deducted_fleece_kg || 1.8} kg wool mass from apparent silhouette.</small>
+                </div>
+            ` : '';
+
+            box.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-success p-2">Species: ${data.species}</span>
+                    <span class="badge bg-info text-dark">${mvMode} (${viewsCount} view${viewsCount > 1 ? 's' : ''})</span>
+                    <span class="badge ${isHeavy ? 'bg-warning text-dark' : 'bg-secondary'}">${data.reliability_status || 'CALIBRATED'}</span>
+                </div>
+                <h3 class="fw-bold mb-1 text-success">${data.estimated_weight_kg} kg</h3>
+                ${data.estimated_weight_g ? `<p class="text-muted mb-2">(${data.estimated_weight_g} grams)</p>` : ''}
+                ${warningHtml}
+                ${fleeceHtml}
+                <hr class="my-2">
+                <div class="mt-2">
+                    <p class="mb-1"><strong>90% Conformal Interval:</strong> [${int90 ? int90.lower : '-'} kg, ${int90 ? int90.upper : '-'} kg] (±${int90 ? int90.half_width : '-'} kg)</p>
+                    <p class="mb-2"><strong>95% Conformal Interval:</strong> [${int95 ? int95.lower : '-'} kg, ${int95 ? int95.upper : '-'} kg] (±${int95 ? int95.half_width : '-'} kg)</p>
+                    <div class="conformal-bar-container">
+                        <div class="conformal-bar-fill" style="width: 100%;"></div>
+                        <div class="conformal-point" style="left: 50%;"></div>
+                    </div>
+                    <small class="text-muted d-block text-center">Finite-Sample Guaranteed Coverage Bracket</small>
+                </div>
+            `;
+        }
+    }
+
+    // Submit Age Staging
+    document.getElementById('ageForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('ageSubmitBtn');
+        const box = document.getElementById('ageResultContainer');
+        const emptyPl = document.getElementById('emptyAgePlaceholder');
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Evaluating age markers...';
+        box.style.display = 'none';
+
+        const species = document.getElementById('ageSpeciesSelect').value;
+        const formData = new FormData();
+        formData.append('species', species);
+
+        const ageFile = document.getElementById('ageImageInput').files[0];
+        if (ageFile) {
+            formData.append('file', ageFile);
+            formData.append('is_oral_dental_capture', (species !== 'HEN'));
+        }
+
+        if (species === 'HEN') {
+            const hatchVal = document.getElementById('hatchWeeksInput').value;
+            if (hatchVal) formData.append('weeks_since_hatch', hatchVal);
+        } else {
+            const dentVal = document.getElementById('dentitionSelect').value;
+            if (dentVal !== '') formData.append('dentition_incisor_pairs', dentVal);
+        }
+
+        try {
+            const res = await fetch('/api/v1/predict/age', { method: 'POST', body: formData });
+            const data = await res.json();
+            emptyPl.style.display = 'none';
+            box.style.display = 'block';
+
+            if (data.status === 'SUCCESS') {
+                box.className = 'interval-box';
+                const weeksText = data.estimated_age_weeks_range ? `Estimated Weeks: ${data.estimated_age_weeks_range[0]} - ${data.estimated_age_weeks_range[1]} wks` : '';
+                box.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-success">Stage: ${data.dental_stage || data.life_stage}</span>
+                        <span class="badge bg-secondary">${data.method}</span>
+                    </div>
+                    <h5 class="fw-bold text-success mb-1">${data.dental_stage || data.life_stage}</h5>
+                    <p class="mb-1"><strong>${data.estimated_age_range_months ? `Estimated Age Range: ${data.estimated_age_range_months[0]} - ${data.estimated_age_range_months[1]} Months` : weeksText}</strong></p>
+                    <p class="mb-0 text-muted">${data.description || ''}</p>
+                `;
+            } else {
+                box.className = 'rejection-box';
+                box.innerHTML = `
+                    <h6 class="text-danger fw-bold mb-1">Age Staging Rejected</h6>
+                    <p class="mb-1"><strong>Reason:</strong> ${data.rejection_reason || data.reason || 'Criteria not met.'}</p>
+                    <p class="mb-0 text-muted"><small><strong>Guidance:</strong> ${data.recommendation || 'Provide an oral incisor inspection photo or verified birth/hatch records.'}</small></p>
+                `;
+            }
+        } catch (err) {
+            emptyPl.style.display = 'none';
+            box.className = 'rejection-box';
+            box.innerHTML = `<strong>Error:</strong> Failed to connect to age prediction service.`;
+            box.style.display = 'block';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Determine Age (Vision AI or Verified Records)';
+        }
+    });
+
+    // Load Registered Animals Roster
+    async function loadAnimalsRoster() {
+        const specFilter = document.getElementById('rosterSpeciesFilter').value;
+        const searchVal = document.getElementById('rosterSearchInput').value;
+        let url = '/api/v1/animals/?';
+        if (specFilter) url += `species=${specFilter}&`;
+        if (searchVal) url += `breed=${encodeURIComponent(searchVal)}&`;
+
+        try {
+            const res = await fetch(url);
+            const animals = await res.json();
+            const tbody = document.getElementById('rosterTableBody');
+            if (!animals || animals.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-3 text-muted">No animals found matching criteria.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = animals.map(a => `
+                <tr>
+                    <td><strong>${a.animal_id}</strong></td>
+                    <td><span class="badge bg-light text-dark">${a.species}</span></td>
+                    <td>${a.farm_id}</td>
+                    <td>${a.breed || '-'}</td>
+                    <td>${a.sex || '-'}</td>
+                    <td>${a.scale_weight_kg ? a.scale_weight_kg + ' kg' : '-'}</td>
+                    <td>${a.dentition_incisor_pairs !== null ? a.dentition_incisor_pairs + ' pairs' : '-'}</td>
+                    <td><button class="btn btn-sm btn-outline-danger" onclick="deleteAnimal('${a.animal_id}')">Delete</button></td>
+                </tr>
+            `).join('');
+        } catch (err) {
+            console.error('Failed to load animals roster:', err);
+        }
+    }
+
+    async function deleteAnimal(animalId) {
+        if (!confirm(`Are you sure you want to delete ${animalId}?`)) return;
+        await fetch(`/api/v1/animals/${animalId}`, { method: 'DELETE' });
+        loadAnimalsRoster();
+    }
+
+    // Trigger Manual Sync Simulation
+    async function triggerManualSync() {
+        const mockBatch = {
+            captures: [
+                {
+                    queue_id: 'sync-demo-' + Math.floor(Math.random() * 10000),
+                    farm_id: 'FARM_EDGE_DEMO',
+                    animal_id: 'COW_SYNC_' + Math.floor(Math.random() * 900 + 100),
+                    species_hint: 'COW',
+                    local_weight_est_kg: 275.5,
+                }
+            ]
+        };
+        const alertBox = document.getElementById('syncResultAlert');
+        try {
+            const res = await fetch('/api/v1/animals/sync/queue', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(mockBatch),
+            });
+            const data = await res.json();
+            alertBox.className = 'alert alert-success mt-3';
+            alertBox.innerHTML = `<strong>Sync Complete!</strong> Processed ${data.total_submitted} capture(s): ${data.synced_count} synced into central registry.`;
+            alertBox.style.display = 'block';
+            loadAnimalsRoster();
+        } catch (err) {
+            alertBox.className = 'alert alert-danger mt-3';
+            alertBox.innerHTML = `<strong>Sync Failed:</strong> ${err.message}`;
+            alertBox.style.display = 'block';
+        }
+    }
+
+    // Load Audit Logs
+    async function loadAuditLogs() {
+        const res = await fetch('/api/v1/animals/audit/logs');
+        const logs = await res.json();
+        const tbody = document.getElementById('auditTableBody');
+        if (!logs || logs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center py-3 text-muted">No audit logs recorded yet.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = logs.map(l => `
+            <tr>
+                <td>#${l.log_id}</td>
+                <td><small>${new Date(l.timestamp).toLocaleTimeString()}</small></td>
+                <td><span class="badge bg-light text-dark">${l.species}</span></td>
+                <td><span class="badge ${l.quality_status === 'PASSED' ? 'bg-success' : 'bg-danger'}">${l.quality_status}</span></td>
+                <td><span class="badge ${l.status === 'SUCCESS' ? 'bg-success' : 'bg-warning'}">${l.status}</span></td>
+                <td><strong>${l.point_estimate ? l.point_estimate + ' kg' : '-'}</strong></td>
+                <td><small>${l.conf_90_lower !== null ? '[' + l.conf_90_lower + ', ' + l.conf_90_upper + '] kg' : '-'}</small></td>
+                <td><small class="text-muted">${l.rejection_reason || 'Passed quality screening'}</small></td>
+            </tr>
+        `).join('');
+    }
+
+    loadAuditLogs();
+    loadAnimalsRoster();
+</script>
+
+</body>
+</html>

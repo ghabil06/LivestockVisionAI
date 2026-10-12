@@ -1,0 +1,8 @@
+<resources>
+    <color name="primary">#1E40AF</color>
+    <color name="primary_dark">#1E3A8A</color>
+    <color name="accent">#10B981</color>
+    <color name="hud_green">#22C55E</color>
+    <color name="hud_amber">#F59E0B</color>
+    <color name="hud_red">#EF4444</color>
+</resources>

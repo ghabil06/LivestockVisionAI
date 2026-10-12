@@ -1,0 +1,74 @@
+{
+  "total_animals_evaluated": 660,
+  "species_metrics": {
+    "COW": {
+      "sample_count": 510,
+      "mean_weight_kg": 256.42,
+      "linear_mae_kg": 32.339,
+      "linear_rmse_kg": 47.879,
+      "linear_r2": 0.584,
+      "log_mae_kg": 28.561,
+      "log_rmse_kg": 45.258,
+      "log_r2": 0.629,
+      "conformal_q90": 65.03,
+      "conformal_q95": 90.93,
+      "coverage_90_pct": 90.0,
+      "coverage_95_pct": 95.3
+    },
+    "HEN": {
+      "sample_count": 50,
+      "mean_weight_kg": 2.36,
+      "linear_mae_kg": 0.254,
+      "linear_rmse_kg": 0.31,
+      "linear_r2": 0.826,
+      "log_mae_kg": 0.241,
+      "log_rmse_kg": 0.309,
+      "log_r2": 0.828,
+      "conformal_q90": 0.54,
+      "conformal_q95": 0.75,
+      "coverage_90_pct": 92.0,
+      "coverage_95_pct": 100.0
+    },
+    "GOAT": {
+      "sample_count": 50,
+      "mean_weight_kg": 39.44,
+      "linear_mae_kg": 12.679,
+      "linear_rmse_kg": 14.583,
+      "linear_r2": -0.087,
+      "log_mae_kg": 12.757,
+      "log_rmse_kg": 14.859,
+      "log_r2": -0.128,
+      "conformal_q90": 24.97,
+      "conformal_q95": 25.67,
+      "coverage_90_pct": 92.0,
+      "coverage_95_pct": 96.0
+    },
+    "SHEEP": {
+      "sample_count": 50,
+      "mean_weight_kg": 45.86,
+      "linear_mae_kg": 14.455,
+      "linear_rmse_kg": 16.624,
+      "linear_r2": -0.087,
+      "log_mae_kg": 14.533,
+      "log_rmse_kg": 16.925,
+      "log_r2": -0.126,
+      "conformal_q90": 28.47,
+      "conformal_q95": 29.27,
+      "coverage_90_pct": 90.0,
+      "coverage_95_pct": 98.0
+    }
+  },
+  "multiview_analysis": {
+    "single_view_mae_kg": 38.16,
+    "multi_view_4_mae_kg": 32.34,
+    "error_reduction_pct": 15.3,
+    "variance_reduction_pct": 28.5
+  },
+  "fleece_analysis": {
+    "unshorn_unadjusted_mae_kg": 4.12,
+    "fleece_adjusted_mae_kg": 14.455,
+    "fleece_correction_bias_reduction_pct": 36.8
+  },
+  "overall_conformal_coverage_90": 90.8,
+  "overall_conformal_coverage_95": 96.1
+}

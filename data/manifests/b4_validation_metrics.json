@@ -1,0 +1,72 @@
+{
+  "cohort_size": 350,
+  "protocol_compliance": {
+    "scale_zero_calibration_pct": 100.0,
+    "morning_fasted_state_pct": 100.0,
+    "fiducial_scale_bar_pct": 100.0,
+    "standard_4_view_coverage_pct": 100.0
+  },
+  "overall_performance": {
+    "cv_model": {
+      "mae_kg": 13.96,
+      "rmse_kg": 17.06,
+      "mape_pct": 5.3,
+      "mean_bias_kg": -1.1
+    },
+    "shaeffer_formula_baseline": {
+      "mae_kg": 16.38,
+      "rmse_kg": 19.72,
+      "mape_pct": 6.7,
+      "mean_bias_kg": -14.42
+    },
+    "error_reduction_vs_shaeffer_pct": 14.8
+  },
+  "conformal_uncertainty_performance": {
+    "nominal_90_coverage_pct": 98.6,
+    "nominal_95_coverage_pct": 99.1,
+    "mean_half_width90_kg": 53.72,
+    "mean_half_width95_kg": 67.22
+  },
+  "breed_stratified_performance": [
+    {
+      "breed": "BARGUR",
+      "sample_size": 100,
+      "mean_scale_weight_kg": 250.3,
+      "cv_mae_kg": 14.67,
+      "shaeffer_mae_kg": 23.44,
+      "cv_superiority_pct": 37.4,
+      "conformal_cov90_pct": 100.0,
+      "conformal_cov95_pct": 100.0
+    },
+    {
+      "breed": "KANGAYAM",
+      "sample_size": 100,
+      "mean_scale_weight_kg": 337.7,
+      "cv_mae_kg": 14.93,
+      "shaeffer_mae_kg": 4.33,
+      "cv_superiority_pct": -245.0,
+      "conformal_cov90_pct": 99.0,
+      "conformal_cov95_pct": 100.0
+    },
+    {
+      "breed": "PULIKULAM",
+      "sample_size": 50,
+      "mean_scale_weight_kg": 282.6,
+      "cv_mae_kg": 15.24,
+      "shaeffer_mae_kg": 6.92,
+      "cv_superiority_pct": -120.2,
+      "conformal_cov90_pct": 100.0,
+      "conformal_cov95_pct": 100.0
+    },
+    {
+      "breed": "UMBLACHERY",
+      "sample_size": 100,
+      "mean_scale_weight_kg": 223.9,
+      "cv_mae_kg": 11.63,
+      "shaeffer_mae_kg": 26.11,
+      "cv_superiority_pct": 55.5,
+      "conformal_cov90_pct": 96.0,
+      "conformal_cov95_pct": 97.0
+    }
+  ]
+}

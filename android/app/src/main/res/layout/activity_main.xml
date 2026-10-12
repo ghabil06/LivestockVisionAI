@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#F8F9FA"
+    android:gravity="top|center_horizontal">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="LivestockVisionAI"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="#212529" />
+
+    <TextView
+        android:id="@+id/tv_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Precision Vision Appraisals & Weight Estimation"
+        android:textSize="14sp"
+        android:textColor="#6C757D" />
+
+    <!-- Screen 1 Feature: API Connection Status Badge -->
+    <TextView
+        android:id="@+id/tv_api_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:background="#D1E7DD"
+        android:textColor="#0F5132"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:text="API Status: Checking..." />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginBottom="28dp"
+        android:background="#DEE2E6" />
+
+    <!-- Action 1: Scan Animal -->
+    <Button
+        android:id="@+id/btn_capture"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="📷 Scan Animal (CameraX)"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Action 2: View Records -->
+    <Button
+        android:id="@+id/btn_records"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="📋 Animal Records & Farm History"
+        android:textSize="15sp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Action 3: Offline Sync -->
+    <Button
+        android:id="@+id/btn_sync"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="🔄 Offline Queue & Sync"
+        android:textSize="15sp" />
+
+</LinearLayout>

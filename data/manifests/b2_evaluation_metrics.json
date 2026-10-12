@@ -1,0 +1,166 @@
+{
+  "dataset_size": 510,
+  "num_folds": 5,
+  "overall_models": {
+    "linear": {
+      "name": "linear",
+      "pred_column": "pred_linear_kg",
+      "mae": 25.78,
+      "rmse": 37.48,
+      "r2": 0.745,
+      "bias": -0.08,
+      "mape": 10.0
+    },
+    "log_raw": {
+      "name": "log_raw",
+      "pred_column": "pred_log_raw_kg",
+      "mae": 21.27,
+      "rmse": 34.16,
+      "r2": 0.788,
+      "bias": -2.01,
+      "mape": 7.9
+    },
+    "log_adj": {
+      "name": "log_adj",
+      "pred_column": "pred_log_adj_kg",
+      "mae": 21.3,
+      "rmse": 34.11,
+      "r2": 0.789,
+      "bias": -1.54,
+      "mape": 7.9
+    }
+  },
+  "stratified_performance": [
+    {
+      "bracket": "LIGHT (< 220 kg)",
+      "count": 152,
+      "pct_herd": 29.8,
+      "linear_mae": 21.88,
+      "log_mae": 15.91,
+      "delta_mae": -5.97,
+      "pct_change": -27.3,
+      "linear_bias": 5.59,
+      "log_bias": 7.7
+    },
+    {
+      "bracket": "MEDIUM (220 - 300 kg)",
+      "count": 292,
+      "pct_herd": 57.3,
+      "linear_mae": 23.72,
+      "log_mae": 18.08,
+      "delta_mae": -5.65,
+      "pct_change": -23.8,
+      "linear_bias": 4.97,
+      "log_bias": 1.92
+    },
+    {
+      "bracket": "HEAVY (> 300 kg)",
+      "count": 66,
+      "pct_herd": 12.9,
+      "linear_mae": 43.89,
+      "log_mae": 47.72,
+      "delta_mae": 3.83,
+      "pct_change": 8.7,
+      "linear_bias": -35.5,
+      "log_bias": -41.8
+    }
+  ],
+  "conformal_evaluation": {
+    "linear": {
+      "standard": {
+        "cov90_pct": 89.8,
+        "cov95_pct": 94.9,
+        "mean_width90_kg": 107.75,
+        "mean_width95_kg": 124.01,
+        "mean_half_width90_kg": 53.88,
+        "mean_half_width95_kg": 62.0
+      },
+      "adaptive": {
+        "cov90_pct": 89.8,
+        "cov95_pct": 95.3,
+        "mean_width90_kg": 111.38,
+        "mean_width95_kg": 136.93
+      },
+      "bracket_breakdown": [
+        {
+          "bracket": "LIGHT (< 220 kg)",
+          "count": 152,
+          "standard_cov90": 93.4,
+          "standard_cov95": 96.1,
+          "adaptive_cov90": 87.5,
+          "adaptive_cov95": 92.8,
+          "adaptive_width90": 98.6,
+          "adaptive_width95": 114.4
+        },
+        {
+          "bracket": "MEDIUM (220 - 300 kg)",
+          "count": 292,
+          "standard_cov90": 91.1,
+          "standard_cov95": 96.6,
+          "adaptive_cov90": 91.4,
+          "adaptive_cov95": 97.3,
+          "adaptive_width90": 101.8,
+          "adaptive_width95": 125.2
+        },
+        {
+          "bracket": "HEAVY (> 300 kg)",
+          "count": 66,
+          "standard_cov90": 75.8,
+          "standard_cov95": 84.8,
+          "adaptive_cov90": 87.9,
+          "adaptive_cov95": 92.4,
+          "adaptive_width90": 183.0,
+          "adaptive_width95": 240.8
+        }
+      ]
+    },
+    "log": {
+      "standard": {
+        "cov90_pct": 90.6,
+        "cov95_pct": 95.5,
+        "mean_width90_kg": 86.7,
+        "mean_width95_kg": 117.15,
+        "mean_half_width90_kg": 43.35,
+        "mean_half_width95_kg": 58.57
+      },
+      "adaptive": {
+        "cov90_pct": 90.8,
+        "cov95_pct": 95.7,
+        "mean_width90_kg": 90.67,
+        "mean_width95_kg": 115.37
+      },
+      "bracket_breakdown": [
+        {
+          "bracket": "LIGHT (< 220 kg)",
+          "count": 152,
+          "standard_cov90": 97.4,
+          "standard_cov95": 99.3,
+          "adaptive_cov90": 91.4,
+          "adaptive_cov95": 96.1,
+          "adaptive_width90": 67.7,
+          "adaptive_width95": 80.6
+        },
+        {
+          "bracket": "MEDIUM (220 - 300 kg)",
+          "count": 292,
+          "standard_cov90": 93.2,
+          "standard_cov95": 98.6,
+          "adaptive_cov90": 91.4,
+          "adaptive_cov95": 95.5,
+          "adaptive_width90": 80.5,
+          "adaptive_width95": 100.3
+        },
+        {
+          "bracket": "HEAVY (> 300 kg)",
+          "count": 66,
+          "standard_cov90": 63.6,
+          "standard_cov95": 72.7,
+          "adaptive_cov90": 86.4,
+          "adaptive_cov95": 95.5,
+          "adaptive_width90": 188.5,
+          "adaptive_width95": 262.3
+        }
+      ]
+    }
+  }
+}

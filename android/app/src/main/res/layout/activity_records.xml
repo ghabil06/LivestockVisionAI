@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="#F8F9FA">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Animal Records & Sync"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#212529" />
+
+    <TextView
+        android:id="@+id/text_queue_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"
+        android:background="#E2E3E5"
+        android:text="Pending Offline Captures: 0"
+        android:textColor="#383D41"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/btn_sync_now"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Sync Offline Queue Now" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Registered Herd / Farm Records"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:textColor="#495057" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/text_animal_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Loading records..."
+            android:lineSpacingExtra="4dp"
+            android:textSize="14sp"
+            android:textColor="#212529" />
+    </ScrollView>
+
+</LinearLayout>
